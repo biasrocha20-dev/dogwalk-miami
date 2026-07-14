@@ -1,4 +1,4 @@
-# On Time - Dog Walker
+# PawMiami — Dog Walking Booking System
 
 Phase 1 MVP: auth, owner/walker profiles, pet profiles, browsing walkers by
 Miami neighborhood, and the booking request flow (no payments yet).
