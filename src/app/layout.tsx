@@ -16,7 +16,7 @@ const display = Fraunces({
 });
 
 export const metadata: Metadata = {
-  title: "PawMiami — Dog Walking in Miami",
+  title: "On Time - Dog Walker",
   description: "Book vetted dog walkers across Miami neighborhoods.",
 };
 
