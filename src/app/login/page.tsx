@@ -1,11 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { login } from "@/app/actions/auth";
 
 export default function LoginPage() {
   const [state, formAction, pending] = useActionState(login, undefined);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.redirectTo) router.push(state.redirectTo);
+  }, [state, router]);
 
   return (
     <div className="mx-auto max-w-md px-4 py-16">

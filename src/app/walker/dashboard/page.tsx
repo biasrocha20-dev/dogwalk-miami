@@ -1,5 +1,9 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
+import { useAuth } from "@/contexts/auth";
 import { BookingActions } from "./booking-actions";
 
 type BookingRow = {
@@ -13,18 +17,32 @@ type BookingRow = {
   profiles: { full_name: string } | null;
 };
 
-export default async function WalkerDashboardPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+export default function WalkerDashboardPage() {
+  const { session, loading } = useAuth();
+  const router = useRouter();
+  const [bookings, setBookings] = useState<BookingRow[] | null>(null);
 
-  const { data: bookings } = await supabase
-    .from("bookings")
-    .select("id, scheduled_at, duration_minutes, status, price, notes, pets(name, notes), profiles!bookings_owner_id_fkey(full_name)")
-    .eq("walker_id", user.id)
-    .order("scheduled_at", { ascending: true });
+  const loadBookings = useCallback(async () => {
+    if (!session?.user) return;
+    const { data } = await supabase
+      .from("bookings")
+      .select(
+        "id, scheduled_at, duration_minutes, status, price, notes, pets(name, notes), profiles!bookings_owner_id_fkey(full_name)",
+      )
+      .eq("walker_id", session.user.id)
+      .order("scheduled_at", { ascending: true });
+    setBookings((data as unknown as BookingRow[]) ?? []);
+  }, [session?.user]);
+
+  useEffect(() => {
+    if (!loading && !session) router.replace("/login");
+  }, [loading, session, router]);
+
+  useEffect(() => {
+    loadBookings();
+  }, [loadBookings]);
+
+  if (loading || !session) return null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
@@ -32,8 +50,8 @@ export default async function WalkerDashboardPage() {
       <p className="mt-1 text-sm text-slate-500">Requests and upcoming walks.</p>
 
       <div className="mt-8 space-y-3">
-        {(bookings as unknown as BookingRow[] | null)?.length ? (
-          (bookings as unknown as BookingRow[]).map((b) => (
+        {bookings?.length ? (
+          bookings.map((b) => (
             <div key={b.id} className="rounded-xl border border-slate-200 bg-white p-4">
               <div className="flex items-center justify-between">
                 <p className="font-semibold text-slate-900">
@@ -63,7 +81,7 @@ export default async function WalkerDashboardPage() {
                 </p>
               )}
               <div className="mt-3">
-                <BookingActions bookingId={b.id} status={b.status} />
+                <BookingActions bookingId={b.id} status={b.status} onUpdated={loadBookings} />
               </div>
             </div>
           ))

@@ -1,21 +1,37 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+"use client";
+
+import { useCallback, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
+import { useAuth } from "@/contexts/auth";
 import type { Pet } from "@/lib/types";
 import { PetForm } from "./pet-form";
 import { DeletePetButton } from "./delete-pet-button";
 
-export default async function OwnerPetsPage() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  if (!user) redirect("/login");
+export default function OwnerPetsPage() {
+  const { session, loading } = useAuth();
+  const router = useRouter();
+  const [pets, setPets] = useState<Pet[] | null>(null);
 
-  const { data: pets } = await supabase
-    .from("pets")
-    .select("*")
-    .eq("owner_id", user.id)
-    .order("created_at", { ascending: false });
+  const loadPets = useCallback(async () => {
+    if (!session?.user) return;
+    const { data } = await supabase
+      .from("pets")
+      .select("*")
+      .eq("owner_id", session.user.id)
+      .order("created_at", { ascending: false });
+    setPets((data as Pet[]) ?? []);
+  }, [session?.user]);
+
+  useEffect(() => {
+    if (!loading && !session) router.replace("/login");
+  }, [loading, session, router]);
+
+  useEffect(() => {
+    loadPets();
+  }, [loadPets]);
+
+  if (loading || !session) return null;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
@@ -25,12 +41,12 @@ export default async function OwnerPetsPage() {
       </p>
 
       <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6">
-        <PetForm />
+        <PetForm onSuccess={loadPets} />
       </div>
 
       <div className="mt-8 space-y-3">
-        {(pets as Pet[] | null)?.length ? (
-          (pets as Pet[]).map((pet) => (
+        {pets?.length ? (
+          pets.map((pet) => (
             <div
               key={pet.id}
               className="flex items-start justify-between rounded-xl border border-slate-200 bg-white p-4"
@@ -47,7 +63,7 @@ export default async function OwnerPetsPage() {
                   Vaccination: {pet.vaccination_status.replace("_", " ")}
                 </p>
               </div>
-              <DeletePetButton petId={pet.id} />
+              <DeletePetButton petId={pet.id} onDeleted={loadPets} />
             </div>
           ))
         ) : (

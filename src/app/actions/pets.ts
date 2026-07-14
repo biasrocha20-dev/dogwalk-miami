@@ -1,8 +1,5 @@
-"use server";
-
 import * as z from "zod";
-import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/client";
 
 const PetSchema = z.object({
   name: z.string().min(1, { error: "Name is required." }),
@@ -12,13 +9,12 @@ const PetSchema = z.object({
   vaccinationStatus: z.enum(["up_to_date", "pending", "unknown"]).default("unknown"),
 });
 
-export type PetFormState = { error?: string } | undefined;
+export type PetFormState = { error?: string; success?: boolean } | undefined;
 
 export async function createPet(
   _prevState: PetFormState,
   formData: FormData,
 ): Promise<PetFormState> {
-  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -45,11 +41,9 @@ export async function createPet(
   });
   if (error) return { error: error.message };
 
-  revalidatePath("/owner/pets");
+  return { success: true };
 }
 
 export async function deletePet(petId: string) {
-  const supabase = await createClient();
   await supabase.from("pets").delete().eq("id", petId);
-  revalidatePath("/owner/pets");
 }

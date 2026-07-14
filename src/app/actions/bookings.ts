@@ -1,9 +1,5 @@
-"use server";
-
 import * as z from "zod";
-import { redirect } from "next/navigation";
-import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/client";
 
 const BookingSchema = z.object({
   walkerId: z.uuid(),
@@ -15,13 +11,12 @@ const BookingSchema = z.object({
   notes: z.string().optional(),
 });
 
-export type BookingFormState = { error?: string } | undefined;
+export type BookingFormState = { error?: string; success?: boolean } | undefined;
 
 export async function createBooking(
   _prevState: BookingFormState,
   formData: FormData,
 ): Promise<BookingFormState> {
-  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -73,13 +68,12 @@ export async function createBooking(
   });
   if (error) return { error: error.message };
 
-  revalidatePath("/owner/bookings");
-  redirect("/owner/bookings?booked=1");
+  return { success: true };
 }
 
-export async function updateBookingStatus(bookingId: string, status: "confirmed" | "cancelled" | "completed") {
-  const supabase = await createClient();
+export async function updateBookingStatus(
+  bookingId: string,
+  status: "confirmed" | "cancelled" | "completed",
+) {
   await supabase.from("bookings").update({ status }).eq("id", bookingId);
-  revalidatePath("/owner/bookings");
-  revalidatePath("/walker/dashboard");
 }

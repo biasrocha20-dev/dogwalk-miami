@@ -3,13 +3,16 @@
 import { useActionState, useRef, useEffect } from "react";
 import { createPet } from "@/app/actions/pets";
 
-export function PetForm() {
+export function PetForm({ onSuccess }: { onSuccess?: () => void }) {
   const [state, formAction, pending] = useActionState(createPet, undefined);
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (!pending && !state?.error) formRef.current?.reset();
-  }, [pending, state]);
+    if (!pending && state?.success) {
+      formRef.current?.reset();
+      onSuccess?.();
+    }
+  }, [pending, state, onSuccess]);
 
   return (
     <form ref={formRef} action={formAction} className="grid gap-4 sm:grid-cols-2">

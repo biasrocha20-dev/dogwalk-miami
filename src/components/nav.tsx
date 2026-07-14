@@ -1,21 +1,19 @@
+"use client";
+
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/contexts/auth";
 import { logout } from "@/app/actions/auth";
 
-export async function Nav() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+export function Nav() {
+  const { session, profile } = useAuth();
+  const router = useRouter();
+  const user = session?.user;
+  const role = profile?.role ?? null;
 
-  let role: string | null = null;
-  if (user) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role")
-      .eq("id", user.id)
-      .single();
-    role = profile?.role ?? null;
+  async function handleLogout() {
+    await logout();
+    router.push("/");
   }
 
   return (
@@ -62,11 +60,9 @@ export async function Nav() {
             </>
           )}
           {user && (
-            <form action={logout}>
-              <button type="submit" className="hover:text-teal-700">
-                Log out
-              </button>
-            </form>
+            <button type="button" onClick={handleLogout} className="hover:text-teal-700">
+              Log out
+            </button>
           )}
         </nav>
       </div>

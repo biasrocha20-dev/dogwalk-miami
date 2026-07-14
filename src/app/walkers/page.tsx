@@ -1,5 +1,9 @@
+"use client";
+
+import { Suspense, useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/lib/supabase/server";
+import { useSearchParams } from "next/navigation";
+import { supabase } from "@/lib/supabase/client";
 import { MIAMI_NEIGHBORHOODS } from "@/lib/neighborhoods";
 
 type WalkerRow = {
@@ -12,24 +16,28 @@ type WalkerRow = {
   profiles: { full_name: string } | null;
 };
 
-export default async function WalkersPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ neighborhood?: string }>;
-}) {
-  const { neighborhood } = await searchParams;
-  const supabase = await createClient();
+function WalkersContent() {
+  const searchParams = useSearchParams();
+  const neighborhood = searchParams.get("neighborhood");
+  const [walkers, setWalkers] = useState<WalkerRow[] | null>(null);
 
-  let query = supabase
-    .from("walker_profiles")
-    .select("user_id, bio, rate_per_walk, service_neighborhoods, rating_avg, rating_count, profiles(full_name)")
-    .eq("active", true);
+  useEffect(() => {
+    (async () => {
+      let query = supabase
+        .from("walker_profiles")
+        .select(
+          "user_id, bio, rate_per_walk, service_neighborhoods, rating_avg, rating_count, profiles(full_name)",
+        )
+        .eq("active", true);
 
-  if (neighborhood) {
-    query = query.contains("service_neighborhoods", [neighborhood]);
-  }
+      if (neighborhood) {
+        query = query.contains("service_neighborhoods", [neighborhood]);
+      }
 
-  const { data: walkers } = await query;
+      const { data } = await query;
+      setWalkers((data as unknown as WalkerRow[]) ?? []);
+    })();
+  }, [neighborhood]);
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
@@ -63,11 +71,11 @@ export default async function WalkersPage({
       </div>
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
-        {(walkers as unknown as WalkerRow[] | null)?.length ? (
-          (walkers as unknown as WalkerRow[]).map((w) => (
+        {walkers?.length ? (
+          walkers.map((w) => (
             <Link
               key={w.user_id}
-              href={`/walkers/${w.user_id}`}
+              href={`/walkers/detail?id=${w.user_id}`}
               className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-teal-300 hover:shadow-sm"
             >
               <p className="font-semibold text-slate-900">
@@ -90,10 +98,18 @@ export default async function WalkersPage({
               </div>
             </Link>
           ))
-        ) : (
+        ) : walkers ? (
           <p className="text-sm text-slate-500">No walkers found in this area yet.</p>
-        )}
+        ) : null}
       </div>
     </div>
+  );
+}
+
+export default function WalkersPage() {
+  return (
+    <Suspense>
+      <WalkersContent />
+    </Suspense>
   );
 }

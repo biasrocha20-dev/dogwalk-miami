@@ -1,8 +1,5 @@
-"use server";
-
 import * as z from "zod";
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/client";
 
 const SignupSchema = z.object({
   fullName: z.string().min(2, { error: "Name must be at least 2 characters." }),
@@ -11,7 +8,9 @@ const SignupSchema = z.object({
   role: z.enum(["owner", "walker"], { error: "Choose an account type." }),
 });
 
-export type AuthFormState = { error?: string; checkEmail?: boolean } | undefined;
+export type AuthFormState =
+  | { error?: string; checkEmail?: boolean; redirectTo?: string }
+  | undefined;
 
 export async function signup(
   _prevState: AuthFormState,
@@ -29,7 +28,6 @@ export async function signup(
   }
 
   const { fullName, email, password, role } = parsed.data;
-  const supabase = await createClient();
 
   // profiles/walker_profiles rows are created by the on_auth_user_created
   // trigger (SECURITY DEFINER), since no session exists yet if email
@@ -46,7 +44,7 @@ export async function signup(
     return { checkEmail: true };
   }
 
-  redirect(role === "walker" ? "/walker/onboarding" : "/owner/pets");
+  return { redirectTo: role === "walker" ? "/walker/onboarding" : "/owner/pets" };
 }
 
 const LoginSchema = z.object({
@@ -67,7 +65,6 @@ export async function login(
     return { error: parsed.error.issues[0]?.message ?? "Invalid input." };
   }
 
-  const supabase = await createClient();
   const { data, error } = await supabase.auth.signInWithPassword(parsed.data);
   if (error) return { error: error.message };
 
@@ -77,11 +74,9 @@ export async function login(
     .eq("id", data.user.id)
     .single();
 
-  redirect(profile?.role === "walker" ? "/walker/dashboard" : "/owner/pets");
+  return { redirectTo: profile?.role === "walker" ? "/walker/dashboard" : "/owner/pets" };
 }
 
 export async function logout() {
-  const supabase = await createClient();
   await supabase.auth.signOut();
-  redirect("/");
 }

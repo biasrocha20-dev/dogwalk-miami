@@ -1,8 +1,5 @@
-"use server";
-
 import * as z from "zod";
-import { revalidatePath } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+import { supabase } from "@/lib/supabase/client";
 import { MIAMI_NEIGHBORHOODS } from "@/lib/neighborhoods";
 
 const WalkerProfileSchema = z.object({
@@ -19,7 +16,6 @@ export async function updateWalkerProfile(
   _prevState: WalkerFormState,
   formData: FormData,
 ): Promise<WalkerFormState> {
-  const supabase = await createClient();
   const {
     data: { user },
   } = await supabase.auth.getUser();
@@ -45,7 +41,5 @@ export async function updateWalkerProfile(
     .eq("user_id", user.id);
   if (error) return { error: error.message };
 
-  revalidatePath("/walker/onboarding");
-  revalidatePath("/walkers");
   return { success: true };
 }

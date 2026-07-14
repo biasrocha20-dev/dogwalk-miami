@@ -1,12 +1,18 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState, useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { signup } from "@/app/actions/auth";
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signup, undefined);
   const [role, setRole] = useState<"owner" | "walker">("owner");
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.redirectTo) router.push(state.redirectTo);
+  }, [state, router]);
 
   if (state?.checkEmail) {
     return (

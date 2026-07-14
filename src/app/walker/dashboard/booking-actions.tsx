@@ -2,18 +2,31 @@
 
 import { updateBookingStatus } from "@/app/actions/bookings";
 
-export function BookingActions({ bookingId, status }: { bookingId: string; status: string }) {
+export function BookingActions({
+  bookingId,
+  status,
+  onUpdated,
+}: {
+  bookingId: string;
+  status: string;
+  onUpdated?: () => void;
+}) {
+  async function update(newStatus: "confirmed" | "cancelled" | "completed") {
+    await updateBookingStatus(bookingId, newStatus);
+    onUpdated?.();
+  }
+
   if (status === "pending") {
     return (
       <div className="flex gap-2">
         <button
-          onClick={() => updateBookingStatus(bookingId, "confirmed")}
+          onClick={() => update("confirmed")}
           className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700"
         >
           Confirm
         </button>
         <button
-          onClick={() => updateBookingStatus(bookingId, "cancelled")}
+          onClick={() => update("cancelled")}
           className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-slate-400"
         >
           Decline
@@ -25,7 +38,7 @@ export function BookingActions({ bookingId, status }: { bookingId: string; statu
   if (status === "confirmed") {
     return (
       <button
-        onClick={() => updateBookingStatus(bookingId, "completed")}
+        onClick={() => update("completed")}
         className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900"
       >
         Mark completed

@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { createBooking } from "@/app/actions/bookings";
 import type { Pet } from "@/lib/types";
 
@@ -8,6 +9,11 @@ const DURATIONS = [20, 30, 60] as const;
 
 export function BookingForm({ walkerId, pets }: { walkerId: string; pets: Pet[] }) {
   const [state, formAction, pending] = useActionState(createBooking, undefined);
+  const router = useRouter();
+
+  useEffect(() => {
+    if (state?.success) router.push("/owner/bookings?booked=1");
+  }, [state, router]);
 
   if (pets.length === 0) {
     return (
