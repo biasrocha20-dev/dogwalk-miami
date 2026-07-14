@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/auth";
+import { statusBadgeClass } from "@/lib/status";
 import { BookingActions } from "./booking-actions";
 
 type BookingRow = {
@@ -46,47 +47,37 @@ export default function WalkerDashboardPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-slate-900">My bookings</h1>
-      <p className="mt-1 text-sm text-slate-500">Requests and upcoming walks.</p>
+      <h1 className="font-display text-2xl font-medium text-[var(--color-ink)]">My bookings</h1>
+      <p className="mt-1 text-sm text-[var(--color-muted)]">Requests and upcoming walks.</p>
 
       <div className="mt-8 space-y-3">
         {bookings?.length ? (
           bookings.map((b) => (
-            <div key={b.id} className="rounded-xl border border-slate-200 bg-white p-4">
+            <div key={b.id} className="card card-hover p-5">
               <div className="flex items-center justify-between">
-                <p className="font-semibold text-slate-900">
+                <p className="font-semibold text-[var(--color-ink)]">
                   {b.pets?.name} · owner {b.profiles?.full_name ?? "—"}
                 </p>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    b.status === "confirmed"
-                      ? "bg-teal-50 text-teal-700"
-                      : b.status === "cancelled"
-                        ? "bg-red-50 text-red-600"
-                        : b.status === "completed"
-                          ? "bg-slate-100 text-slate-600"
-                          : "bg-amber-50 text-amber-700"
-                  }`}
-                >
-                  {b.status}
-                </span>
+                <span className={statusBadgeClass(b.status)}>{b.status}</span>
               </div>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
                 {new Date(b.scheduled_at).toLocaleString()} · {b.duration_minutes} min · $
                 {b.price.toFixed(2)}
               </p>
               {(b.notes || b.pets?.notes) && (
-                <p className="mt-2 text-sm text-slate-600">
+                <p className="mt-2 text-sm text-[var(--color-muted)]">
                   {b.pets?.notes} {b.notes ? `· ${b.notes}` : ""}
                 </p>
               )}
-              <div className="mt-3">
+              <div className="mt-3.5">
                 <BookingActions bookingId={b.id} status={b.status} onUpdated={loadBookings} />
               </div>
             </div>
           ))
         ) : (
-          <p className="text-sm text-slate-500">No booking requests yet.</p>
+          <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
+            No booking requests yet.
+          </div>
         )}
       </div>
     </div>

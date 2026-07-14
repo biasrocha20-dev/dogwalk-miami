@@ -17,9 +17,9 @@ export function BookingForm({ walkerId, pets }: { walkerId: string; pets: Pet[] 
 
   if (pets.length === 0) {
     return (
-      <p className="text-sm text-slate-600">
+      <p className="text-sm text-[var(--color-ink-soft)]">
         Add a pet profile before booking a walk. Go to{" "}
-        <a href="/owner/pets" className="font-medium text-teal-700 hover:underline">
+        <a href="/owner/pets" className="btn-text">
           My pets
         </a>
         .
@@ -32,15 +32,10 @@ export function BookingForm({ walkerId, pets }: { walkerId: string; pets: Pet[] 
       <input type="hidden" name="walkerId" value={walkerId} />
 
       <div>
-        <label htmlFor="petId" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="petId" className="field-label">
           Which pet?
         </label>
-        <select
-          id="petId"
-          name="petId"
-          required
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
-        >
+        <select id="petId" name="petId" required className="field-input">
           {pets.map((pet) => (
             <option key={pet.id} value={pet.id}>
               {pet.name}
@@ -50,7 +45,7 @@ export function BookingForm({ walkerId, pets }: { walkerId: string; pets: Pet[] 
       </div>
 
       <div>
-        <label htmlFor="scheduledAt" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="scheduledAt" className="field-label">
           Date &amp; time
         </label>
         <input
@@ -58,20 +53,15 @@ export function BookingForm({ walkerId, pets }: { walkerId: string; pets: Pet[] 
           name="scheduledAt"
           type="datetime-local"
           required
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
+          className="field-input"
         />
       </div>
 
       <div>
-        <label htmlFor="durationMinutes" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="durationMinutes" className="field-label">
           Duration
         </label>
-        <select
-          id="durationMinutes"
-          name="durationMinutes"
-          required
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
-        >
+        <select id="durationMinutes" name="durationMinutes" required className="field-input">
           {DURATIONS.map((d) => (
             <option key={d} value={d}>
               {d} minutes
@@ -81,24 +71,19 @@ export function BookingForm({ walkerId, pets }: { walkerId: string; pets: Pet[] 
       </div>
 
       <div>
-        <label htmlFor="notes" className="block text-sm font-medium text-slate-700">
+        <label htmlFor="notes" className="field-label">
           Notes for the walker (optional)
         </label>
-        <textarea
-          id="notes"
-          name="notes"
-          rows={2}
-          className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
-        />
+        <textarea id="notes" name="notes" rows={2} className="field-input" />
       </div>
 
-      {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
+      {state?.error && (
+        <p className="rounded-xl bg-[var(--color-accent-soft)] px-3.5 py-2.5 text-sm text-[var(--color-accent-hover)]">
+          {state.error}
+        </p>
+      )}
 
-      <button
-        type="submit"
-        disabled={pending}
-        className="w-full rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:opacity-60"
-      >
+      <button type="submit" disabled={pending} className="btn-accent w-full">
         {pending ? "Booking…" : "Request booking"}
       </button>
     </form>

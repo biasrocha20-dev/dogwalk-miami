@@ -21,13 +21,13 @@ export function BookingActions({
       <div className="flex gap-2">
         <button
           onClick={() => update("confirmed")}
-          className="rounded-lg bg-teal-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-teal-700"
+          className="rounded-full bg-[var(--color-primary)] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:bg-[var(--color-primary-hover)]"
         >
           Confirm
         </button>
         <button
           onClick={() => update("cancelled")}
-          className="rounded-lg border border-slate-300 px-3 py-1.5 text-xs font-semibold text-slate-600 hover:border-slate-400"
+          className="rounded-full border border-[var(--color-border)] px-3.5 py-1.5 text-xs font-semibold text-[var(--color-ink-soft)] transition hover:border-[var(--color-ink-soft)]"
         >
           Decline
         </button>
@@ -39,7 +39,7 @@ export function BookingActions({
     return (
       <button
         onClick={() => update("completed")}
-        className="rounded-lg bg-slate-800 px-3 py-1.5 text-xs font-semibold text-white hover:bg-slate-900"
+        className="rounded-full bg-[var(--color-ink)] px-3.5 py-1.5 text-xs font-semibold text-white transition hover:opacity-90"
       >
         Mark completed
       </button>

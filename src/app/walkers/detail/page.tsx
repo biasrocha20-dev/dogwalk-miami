@@ -17,6 +17,15 @@ type WalkerDetail = {
   profiles: { full_name: string } | null;
 };
 
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 function WalkerDetailContent() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id");
@@ -56,7 +65,9 @@ function WalkerDetailContent() {
   if (notFound) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-12">
-        <p className="text-sm text-slate-600">Walker not found.</p>
+        <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
+          Walker not found.
+        </div>
       </div>
     );
   }
@@ -67,32 +78,50 @@ function WalkerDetailContent() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <div className="rounded-xl border border-slate-200 bg-white p-6">
-        <h1 className="text-2xl font-bold text-slate-900">{profileName}</h1>
-        <p className="mt-1 text-sm text-slate-500">
-          ${walker.rate_per_walk.toFixed(2)} / walk ·{" "}
-          {walker.rating_count > 0
-            ? `${walker.rating_avg.toFixed(1)}★ (${walker.rating_count} reviews)`
-            : "New walker"}
-        </p>
-        {walker.bio && <p className="mt-4 text-slate-700">{walker.bio}</p>}
-        <div className="mt-4 flex flex-wrap gap-1">
+      <div className="card p-7">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-xl font-semibold text-white">
+            {initials(profileName)}
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-medium text-[var(--color-ink)]">
+              {profileName}
+            </h1>
+            <p className="mt-0.5 text-sm text-[var(--color-muted)]">
+              ${walker.rate_per_walk.toFixed(2)} / walk ·{" "}
+              {walker.rating_count > 0
+                ? `${walker.rating_avg.toFixed(1)}★ (${walker.rating_count} reviews)`
+                : "New walker"}
+            </p>
+          </div>
+        </div>
+        {walker.bio && (
+          <p className="mt-5 text-sm leading-relaxed text-[var(--color-ink-soft)]">
+            {walker.bio}
+          </p>
+        )}
+        <div className="mt-4 flex flex-wrap gap-1.5">
           {walker.service_neighborhoods.map((n) => (
-            <span key={n} className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+            <span
+              key={n}
+              className="rounded-full bg-[var(--color-border-soft)] px-2.5 py-1 text-xs text-[var(--color-ink-soft)]"
+            >
               {n}
             </span>
           ))}
         </div>
       </div>
 
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-slate-900">Book a walk</h2>
+      <div className="card mt-6 p-7">
+        <h2 className="font-display text-lg font-medium text-[var(--color-ink)]">
+          Book a walk
+        </h2>
         <div className="mt-4">
           {session?.user ? (
             <BookingForm walkerId={walker.user_id} pets={pets} />
           ) : (
-            <p className="text-sm text-slate-600">
-              <a href="/login" className="font-medium text-teal-700 hover:underline">
+            <p className="text-sm text-[var(--color-ink-soft)]">
+              <a href="/login" className="btn-text">
                 Log in
               </a>{" "}
               as a dog owner to book this walker.

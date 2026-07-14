@@ -16,6 +16,15 @@ type WalkerRow = {
   profiles: { full_name: string } | null;
 };
 
+function initials(name: string) {
+  return name
+    .split(" ")
+    .map((p) => p[0])
+    .slice(0, 2)
+    .join("")
+    .toUpperCase();
+}
+
 function WalkersContent() {
   const searchParams = useSearchParams();
   const neighborhood = searchParams.get("neighborhood");
@@ -41,29 +50,22 @@ function WalkersContent() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-slate-900">Find a dog walker in Miami</h1>
-      <p className="mt-1 text-sm text-slate-500">Vetted walkers across every neighborhood.</p>
+      <h1 className="font-display text-2xl font-medium text-[var(--color-ink)]">
+        Find a dog walker in Miami
+      </h1>
+      <p className="mt-1 text-sm text-[var(--color-muted)]">
+        Vetted walkers across every neighborhood.
+      </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
-        <Link
-          href="/walkers"
-          className={`rounded-full border px-3 py-1.5 text-sm ${
-            !neighborhood
-              ? "border-teal-600 bg-teal-50 text-teal-700"
-              : "border-slate-200 text-slate-600 hover:border-slate-300"
-          }`}
-        >
+        <Link href="/walkers" className={!neighborhood ? "pill-active" : "pill"}>
           All
         </Link>
         {MIAMI_NEIGHBORHOODS.map((n) => (
           <Link
             key={n}
             href={`/walkers?neighborhood=${encodeURIComponent(n)}`}
-            className={`rounded-full border px-3 py-1.5 text-sm ${
-              neighborhood === n
-                ? "border-teal-600 bg-teal-50 text-teal-700"
-                : "border-slate-200 text-slate-600 hover:border-slate-300"
-            }`}
+            className={neighborhood === n ? "pill-active" : "pill"}
           >
             {n}
           </Link>
@@ -72,34 +74,50 @@ function WalkersContent() {
 
       <div className="mt-8 grid gap-4 sm:grid-cols-2">
         {walkers?.length ? (
-          walkers.map((w) => (
-            <Link
-              key={w.user_id}
-              href={`/walkers/detail?id=${w.user_id}`}
-              className="rounded-xl border border-slate-200 bg-white p-5 transition hover:border-teal-300 hover:shadow-sm"
-            >
-              <p className="font-semibold text-slate-900">
-                {w.profiles?.full_name ?? "Walker"}
-              </p>
-              <p className="mt-1 text-sm text-slate-500">
-                ${w.rate_per_walk.toFixed(2)} / walk ·{" "}
-                {w.rating_count > 0 ? `${w.rating_avg.toFixed(1)}★ (${w.rating_count})` : "New"}
-              </p>
-              {w.bio && <p className="mt-2 line-clamp-2 text-sm text-slate-600">{w.bio}</p>}
-              <div className="mt-3 flex flex-wrap gap-1">
-                {w.service_neighborhoods.map((n) => (
-                  <span
-                    key={n}
-                    className="rounded-full bg-slate-100 px-2 py-0.5 text-xs text-slate-600"
-                  >
-                    {n}
-                  </span>
-                ))}
-              </div>
-            </Link>
-          ))
+          walkers.map((w) => {
+            const name = w.profiles?.full_name ?? "Walker";
+            return (
+              <Link
+                key={w.user_id}
+                href={`/walkers/detail?id=${w.user_id}`}
+                className="card card-hover flex flex-col p-5"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[var(--color-primary)] text-sm font-semibold text-white">
+                    {initials(name)}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-[var(--color-ink)]">{name}</p>
+                    <p className="text-sm text-[var(--color-muted)]">
+                      ${w.rate_per_walk.toFixed(2)} / walk ·{" "}
+                      {w.rating_count > 0
+                        ? `${w.rating_avg.toFixed(1)}★ (${w.rating_count})`
+                        : "New"}
+                    </p>
+                  </div>
+                </div>
+                {w.bio && (
+                  <p className="mt-3 line-clamp-2 text-sm text-[var(--color-ink-soft)]">
+                    {w.bio}
+                  </p>
+                )}
+                <div className="mt-3.5 flex flex-wrap gap-1.5">
+                  {w.service_neighborhoods.map((n) => (
+                    <span
+                      key={n}
+                      className="rounded-full bg-[var(--color-border-soft)] px-2.5 py-1 text-xs text-[var(--color-ink-soft)]"
+                    >
+                      {n}
+                    </span>
+                  ))}
+                </div>
+              </Link>
+            );
+          })
         ) : walkers ? (
-          <p className="text-sm text-slate-500">No walkers found in this area yet.</p>
+          <div className="card p-8 text-center text-sm text-[var(--color-muted)] sm:col-span-2">
+            No walkers found in this area yet.
+          </div>
         ) : null}
       </div>
     </div>

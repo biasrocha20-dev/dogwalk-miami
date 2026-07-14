@@ -4,6 +4,7 @@ import { Suspense, useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/auth";
+import { statusBadgeClass } from "@/lib/status";
 
 type BookingRow = {
   id: string;
@@ -44,46 +45,34 @@ function OwnerBookingsContent() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-slate-900">My bookings</h1>
+      <h1 className="font-display text-2xl font-medium text-[var(--color-ink)]">My bookings</h1>
 
       {booked && (
-        <p className="mt-4 rounded-lg bg-teal-50 px-4 py-3 text-sm text-teal-700">
-          Booking request sent! The walker will confirm shortly.
+        <p className="mt-4 rounded-xl bg-[var(--color-primary-soft)] px-4 py-3 text-sm font-medium text-[var(--color-primary)]">
+          🎉 Booking request sent! The walker will confirm shortly.
         </p>
       )}
 
       <div className="mt-8 space-y-3">
         {bookings?.length ? (
           bookings.map((b) => (
-            <div key={b.id} className="rounded-xl border border-slate-200 bg-white p-4">
+            <div key={b.id} className="card card-hover p-5">
               <div className="flex items-center justify-between">
-                <p className="font-semibold text-slate-900">
+                <p className="font-semibold text-[var(--color-ink)]">
                   {b.pets?.name} with {b.walker_profiles?.profiles?.full_name ?? "Walker"}
                 </p>
-                <span
-                  className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-                    b.status === "confirmed"
-                      ? "bg-teal-50 text-teal-700"
-                      : b.status === "cancelled"
-                        ? "bg-red-50 text-red-600"
-                        : b.status === "completed"
-                          ? "bg-slate-100 text-slate-600"
-                          : "bg-amber-50 text-amber-700"
-                  }`}
-                >
-                  {b.status}
-                </span>
+                <span className={statusBadgeClass(b.status)}>{b.status}</span>
               </div>
-              <p className="mt-1 text-sm text-slate-500">
+              <p className="mt-1.5 text-sm text-[var(--color-ink-soft)]">
                 {new Date(b.scheduled_at).toLocaleString()} · {b.duration_minutes} min · $
                 {b.price.toFixed(2)}
               </p>
             </div>
           ))
         ) : (
-          <p className="text-sm text-slate-500">
+          <div className="card p-8 text-center text-sm text-[var(--color-muted)]">
             No bookings yet — find a walker to get started.
-          </p>
+          </div>
         )}
       </div>
     </div>

@@ -16,11 +16,16 @@ export default function SignupPage() {
 
   if (state?.checkEmail) {
     return (
-      <div className="mx-auto max-w-md px-4 py-16 text-center">
-        <h1 className="text-2xl font-bold text-slate-900">Check your email</h1>
-        <p className="mt-3 text-sm text-slate-600">
+      <div className="mx-auto flex max-w-md flex-col items-center px-4 py-20 text-center">
+        <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--color-primary-soft)] text-2xl">
+          📬
+        </div>
+        <h1 className="mt-5 font-display text-2xl font-medium text-[var(--color-ink)]">
+          Check your email
+        </h1>
+        <p className="mt-3 text-sm text-[var(--color-ink-soft)]">
           We sent a confirmation link to your inbox. Click it to activate your account, then{" "}
-          <Link href="/login" className="font-medium text-teal-700 hover:underline">
+          <Link href="/login" className="btn-text">
             log in
           </Link>
           .
@@ -30,89 +35,78 @@ export default function SignupPage() {
   }
 
   return (
-    <div className="mx-auto max-w-md px-4 py-16">
-      <h1 className="text-2xl font-bold text-slate-900">Create your account</h1>
-      <p className="mt-1 text-sm text-slate-500">Join Miami&apos;s dog walking community.</p>
+    <div className="mx-auto max-w-md px-4 py-16 sm:py-20">
+      <div className="card p-8">
+        <h1 className="font-display text-2xl font-medium text-[var(--color-ink)]">
+          Create your account
+        </h1>
+        <p className="mt-1 text-sm text-[var(--color-muted)]">
+          Join Miami&apos;s dog walking community.
+        </p>
 
-      <form action={formAction} className="mt-8 space-y-5">
-        <div className="grid grid-cols-2 gap-3">
-          <button
-            type="button"
-            onClick={() => setRole("owner")}
-            className={`rounded-lg border px-4 py-3 text-sm font-medium transition ${
-              role === "owner"
-                ? "border-teal-600 bg-teal-50 text-teal-700"
-                : "border-slate-200 text-slate-600 hover:border-slate-300"
-            }`}
-          >
-            I&apos;m a dog owner
+        <form action={formAction} className="mt-7 space-y-5">
+          <div className="grid grid-cols-2 gap-3">
+            <button
+              type="button"
+              onClick={() => setRole("owner")}
+              className={
+                role === "owner"
+                  ? "rounded-xl border-2 border-[var(--color-primary)] bg-[var(--color-primary-soft)] px-4 py-3 text-sm font-semibold text-[var(--color-primary)] transition"
+                  : "rounded-xl border-2 border-[var(--color-border)] px-4 py-3 text-sm font-medium text-[var(--color-ink-soft)] transition hover:border-[var(--color-ink-soft)]"
+              }
+            >
+              🐶 Dog owner
+            </button>
+            <button
+              type="button"
+              onClick={() => setRole("walker")}
+              className={
+                role === "walker"
+                  ? "rounded-xl border-2 border-[var(--color-primary)] bg-[var(--color-primary-soft)] px-4 py-3 text-sm font-semibold text-[var(--color-primary)] transition"
+                  : "rounded-xl border-2 border-[var(--color-border)] px-4 py-3 text-sm font-medium text-[var(--color-ink-soft)] transition hover:border-[var(--color-ink-soft)]"
+              }
+            >
+              🚶 Dog walker
+            </button>
+          </div>
+          <input type="hidden" name="role" value={role} />
+
+          <div>
+            <label htmlFor="fullName" className="field-label">
+              Full name
+            </label>
+            <input id="fullName" name="fullName" required className="field-input" />
+          </div>
+
+          <div>
+            <label htmlFor="email" className="field-label">
+              Email
+            </label>
+            <input id="email" name="email" type="email" required className="field-input" />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="field-label">
+              Password
+            </label>
+            <input id="password" name="password" type="password" required className="field-input" />
+          </div>
+
+          {state?.error && (
+            <p className="rounded-xl bg-[var(--color-accent-soft)] px-3.5 py-2.5 text-sm text-[var(--color-accent-hover)]">
+              {state.error}
+            </p>
+          )}
+
+          <button type="submit" disabled={pending} className="btn-primary w-full">
+            {pending ? "Creating account…" : "Sign up"}
           </button>
-          <button
-            type="button"
-            onClick={() => setRole("walker")}
-            className={`rounded-lg border px-4 py-3 text-sm font-medium transition ${
-              role === "walker"
-                ? "border-teal-600 bg-teal-50 text-teal-700"
-                : "border-slate-200 text-slate-600 hover:border-slate-300"
-            }`}
-          >
-            I&apos;m a dog walker
-          </button>
-        </div>
-        <input type="hidden" name="role" value={role} />
+        </form>
+      </div>
 
-        <div>
-          <label htmlFor="fullName" className="block text-sm font-medium text-slate-700">
-            Full name
-          </label>
-          <input
-            id="fullName"
-            name="fullName"
-            required
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="email" className="block text-sm font-medium text-slate-700">
-            Email
-          </label>
-          <input
-            id="email"
-            name="email"
-            type="email"
-            required
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="block text-sm font-medium text-slate-700">
-            Password
-          </label>
-          <input
-            id="password"
-            name="password"
-            type="password"
-            required
-            className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-teal-500 focus:outline-none"
-          />
-        </div>
-
-        {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded-lg bg-teal-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:opacity-60"
-        >
-          {pending ? "Creating account…" : "Sign up"}
-        </button>
-      </form>
-
-      <p className="mt-6 text-center text-sm text-slate-500">
+      <p className="mt-6 text-center text-sm text-[var(--color-ink-soft)]">
         Already have an account?{" "}
-        <Link href="/login" className="font-medium text-teal-700 hover:underline">
+        <Link href="/login" className="btn-text">
           Log in
         </Link>
       </p>

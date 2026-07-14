@@ -38,12 +38,14 @@ export default function WalkerOnboardingPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-12">
-      <h1 className="text-2xl font-bold text-slate-900">Your walker profile</h1>
-      <p className="mt-1 text-sm text-slate-500">
+      <h1 className="font-display text-2xl font-medium text-[var(--color-ink)]">
+        Your walker profile
+      </h1>
+      <p className="mt-1 text-sm text-[var(--color-muted)]">
         This is what dog owners see when browsing walkers in your area.
       </p>
 
-      <div className="mt-8 rounded-xl border border-slate-200 bg-white p-6">
+      <div className="card mt-8 p-6">
         <WalkerProfileForm walkerProfile={walkerProfile} />
       </div>
     </div>

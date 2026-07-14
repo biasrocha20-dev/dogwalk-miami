@@ -10,7 +10,7 @@ export function DeletePetButton({ petId, onDeleted }: { petId: string; onDeleted
         await deletePet(petId);
         onDeleted?.();
       }}
-      className="text-sm font-medium text-red-600 hover:underline"
+      className="shrink-0 text-sm font-medium text-[var(--color-accent-hover)] transition hover:text-[var(--color-accent)]"
     >
       Remove
     </button>
