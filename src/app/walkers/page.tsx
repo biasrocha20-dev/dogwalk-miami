@@ -9,7 +9,6 @@ import { MIAMI_NEIGHBORHOODS } from "@/lib/neighborhoods";
 type WalkerRow = {
   user_id: string;
   bio: string | null;
-  rate_per_walk: number;
   service_neighborhoods: string[];
   rating_avg: number;
   rating_count: number;
@@ -35,7 +34,7 @@ function WalkersContent() {
       let query = supabase
         .from("walker_profiles")
         .select(
-          "user_id, bio, rate_per_walk, service_neighborhoods, rating_avg, rating_count, profiles(full_name)",
+          "user_id, bio, service_neighborhoods, rating_avg, rating_count, profiles(full_name)",
         )
         .eq("active", true);
 
@@ -54,7 +53,8 @@ function WalkersContent() {
         Find a dog walker in Miami
       </h1>
       <p className="mt-1 text-sm text-[var(--color-muted)]">
-        Vetted walkers across every neighborhood.
+        Vetted walkers across every neighborhood. Walks start at $15 for 30 minutes, $30 for an
+        hour.
       </p>
 
       <div className="mt-6 flex flex-wrap gap-2">
@@ -89,10 +89,9 @@ function WalkersContent() {
                   <div>
                     <p className="font-semibold text-[var(--color-ink)]">{name}</p>
                     <p className="text-sm text-[var(--color-muted)]">
-                      ${w.rate_per_walk.toFixed(2)} / walk ·{" "}
                       {w.rating_count > 0
                         ? `${w.rating_avg.toFixed(1)}★ (${w.rating_count})`
-                        : "New"}
+                        : "New walker"}
                     </p>
                   </div>
                 </div>

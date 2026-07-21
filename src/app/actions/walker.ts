@@ -4,7 +4,6 @@ import { MIAMI_NEIGHBORHOODS } from "@/lib/neighborhoods";
 
 const WalkerProfileSchema = z.object({
   bio: z.string().max(1000).optional(),
-  ratePerWalk: z.coerce.number().min(5).max(500),
   neighborhoods: z.array(z.enum(MIAMI_NEIGHBORHOODS)).min(1, {
     error: "Select at least one service neighborhood.",
   }),
@@ -23,7 +22,6 @@ export async function updateWalkerProfile(
 
   const parsed = WalkerProfileSchema.safeParse({
     bio: formData.get("bio") || undefined,
-    ratePerWalk: formData.get("ratePerWalk"),
     neighborhoods: formData.getAll("neighborhoods"),
   });
   if (!parsed.success) {
@@ -34,7 +32,6 @@ export async function updateWalkerProfile(
     .from("walker_profiles")
     .update({
       bio: parsed.data.bio ?? null,
-      rate_per_walk: parsed.data.ratePerWalk,
       service_neighborhoods: parsed.data.neighborhoods,
       active: true,
     })

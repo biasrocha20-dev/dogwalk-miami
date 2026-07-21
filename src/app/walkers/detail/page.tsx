@@ -10,7 +10,6 @@ import { BookingForm } from "./booking-form";
 type WalkerDetail = {
   user_id: string;
   bio: string | null;
-  rate_per_walk: number;
   service_neighborhoods: string[];
   rating_avg: number;
   rating_count: number;
@@ -40,7 +39,7 @@ function WalkerDetailContent() {
       const { data } = await supabase
         .from("walker_profiles")
         .select(
-          "user_id, bio, rate_per_walk, service_neighborhoods, rating_avg, rating_count, profiles(full_name)",
+          "user_id, bio, service_neighborhoods, rating_avg, rating_count, profiles(full_name)",
         )
         .eq("user_id", id)
         .eq("active", true)
@@ -88,7 +87,6 @@ function WalkerDetailContent() {
               {profileName}
             </h1>
             <p className="mt-0.5 text-sm text-[var(--color-muted)]">
-              ${walker.rate_per_walk.toFixed(2)} / walk ·{" "}
               {walker.rating_count > 0
                 ? `${walker.rating_avg.toFixed(1)}★ (${walker.rating_count} reviews)`
                 : "New walker"}

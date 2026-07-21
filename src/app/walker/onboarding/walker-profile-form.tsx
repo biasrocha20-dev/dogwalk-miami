@@ -24,21 +24,9 @@ export function WalkerProfileForm({ walkerProfile }: { walkerProfile: WalkerProf
         />
       </div>
 
-      <div>
-        <label htmlFor="ratePerWalk" className="field-label">
-          Rate per walk (USD)
-        </label>
-        <input
-          id="ratePerWalk"
-          name="ratePerWalk"
-          type="number"
-          min={5}
-          max={500}
-          step="0.01"
-          defaultValue={walkerProfile.rate_per_walk}
-          required
-          className="field-input w-40"
-        />
+      <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-primary-soft)]/40 px-4 py-3 text-sm text-[var(--color-ink-soft)]">
+        Walk pricing is fixed platform-wide: <strong>$10</strong> for 20 min,{" "}
+        <strong>$15</strong> for 30 min, and <strong>$30</strong> for 1 hour.
       </div>
 
       <div>

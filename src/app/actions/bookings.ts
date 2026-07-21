@@ -1,5 +1,6 @@
 import * as z from "zod";
 import { supabase } from "@/lib/supabase/client";
+import { DURATION_PRICES } from "@/lib/pricing";
 
 const BookingSchema = z.object({
   walkerId: z.uuid(),
@@ -40,7 +41,7 @@ export async function createBooking(
 
   const { data: walkerProfile } = await supabase
     .from("walker_profiles")
-    .select("rate_per_walk, active")
+    .select("active")
     .eq("user_id", parsed.data.walkerId)
     .single();
   if (!walkerProfile || !walkerProfile.active) {
@@ -55,7 +56,7 @@ export async function createBooking(
     .single();
   if (!pet) return { error: "Select one of your pets." };
 
-  const price = Number(((walkerProfile.rate_per_walk * parsed.data.durationMinutes) / 30).toFixed(2));
+  const price = DURATION_PRICES[parsed.data.durationMinutes as 20 | 30 | 60];
 
   const { error } = await supabase.from("bookings").insert({
     owner_id: user.id,

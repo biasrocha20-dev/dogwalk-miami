@@ -3,6 +3,7 @@
 import { useActionState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createBooking } from "@/app/actions/bookings";
+import { DURATION_PRICES } from "@/lib/pricing";
 import type { Pet } from "@/lib/types";
 
 const DURATIONS = [20, 30, 60] as const;
@@ -64,7 +65,7 @@ export function BookingForm({ walkerId, pets }: { walkerId: string; pets: Pet[] 
         <select id="durationMinutes" name="durationMinutes" required className="field-input">
           {DURATIONS.map((d) => (
             <option key={d} value={d}>
-              {d} minutes
+              {d === 60 ? "1 hour" : `${d} minutes`} — ${DURATION_PRICES[d]}
             </option>
           ))}
         </select>
