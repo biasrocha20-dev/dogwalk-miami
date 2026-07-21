@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Fraunces, Plus_Jakarta_Sans } from "next/font/google";
 import { Nav } from "@/components/nav";
+import { Footer } from "@/components/footer";
 import { AuthProvider } from "@/contexts/auth";
 import "./globals.css";
 
@@ -31,6 +32,7 @@ export default function RootLayout({
         <AuthProvider>
           <Nav />
           <main className="flex-1">{children}</main>
+          <Footer />
         </AuthProvider>
       </body>
     </html>

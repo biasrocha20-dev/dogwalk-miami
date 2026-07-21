@@ -27,6 +27,8 @@ create table if not exists profiles (
   role text not null check (role in ('owner', 'walker', 'admin')),
   full_name text not null,
   phone text,
+  address text,
+  email text,
   avatar_url text,
   created_at timestamptz not null default now()
 );
@@ -37,6 +39,7 @@ create table if not exists pets (
   name text not null,
   breed text,
   size text check (size in ('small', 'medium', 'large')),
+  age_years numeric(4, 1),
   notes text,
   vaccination_status text check (vaccination_status in ('up_to_date', 'pending', 'unknown')) default 'unknown',
   created_at timestamptz not null default now()
@@ -105,6 +108,14 @@ create table if not exists reviews (
   direction text not null check (direction in ('owner_to_walker', 'walker_to_owner')),
   rating smallint not null check (rating between 1 and 5),
   comment text,
+  created_at timestamptz not null default now()
+);
+
+create table if not exists contact_messages (
+  id uuid primary key default gen_random_uuid(),
+  name text not null,
+  email text not null,
+  message text not null,
   created_at timestamptz not null default now()
 );
 
@@ -182,6 +193,11 @@ alter table bookings enable row level security;
 alter table walk_sessions enable row level security;
 alter table payments enable row level security;
 alter table reviews enable row level security;
+alter table contact_messages enable row level security;
+
+create policy "anyone can submit a contact message" on contact_messages
+  for insert
+  with check (true);
 
 create policy "profiles are viewable by everyone" on profiles for select using (true);
 create policy "users manage own profile" on profiles for insert with check (auth.uid() = id);

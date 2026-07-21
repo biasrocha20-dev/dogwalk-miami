@@ -51,7 +51,7 @@ export default function Home() {
             <Link href="/walkers" className="btn-accent px-7 py-3.5 text-base">
               Find a walker
             </Link>
-            <Link href="/signup" className="btn-ghost px-7 py-3.5 text-base">
+            <Link href="/become-a-walker" className="btn-ghost px-7 py-3.5 text-base">
               Become a walker
             </Link>
           </div>

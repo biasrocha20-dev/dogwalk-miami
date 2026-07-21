@@ -1,13 +1,16 @@
 "use client";
 
-import { useActionState, useEffect, useState } from "react";
+import { Suspense, useActionState, useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signup } from "@/app/actions/auth";
 
-export default function SignupPage() {
+function SignupContent() {
   const [state, formAction, pending] = useActionState(signup, undefined);
-  const [role, setRole] = useState<"owner" | "walker">("owner");
+  const searchParams = useSearchParams();
+  const [role, setRole] = useState<"owner" | "walker">(
+    searchParams.get("role") === "walker" ? "walker" : "owner",
+  );
   const router = useRouter();
 
   useEffect(() => {
@@ -111,5 +114,13 @@ export default function SignupPage() {
         </Link>
       </p>
     </div>
+  );
+}
+
+export default function SignupPage() {
+  return (
+    <Suspense>
+      <SignupContent />
+    </Suspense>
   );
 }
